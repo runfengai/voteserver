@@ -18,6 +18,24 @@ public class VoteInfo implements Serializable {
     private Date expiryDate;
     private Date createDate;
     private Date updateDate;
+    private int sumUser;
+    private int sumVote;
+
+    public int getSumUser() {
+        return sumUser;
+    }
+
+    public void setSumUser(int sumUser) {
+        this.sumUser = sumUser;
+    }
+
+    public int getSumVote() {
+        return sumVote;
+    }
+
+    public void setSumVote(int sumVote) {
+        this.sumVote = sumVote;
+    }
 
     public Date getUpdateDate() {
         return updateDate;

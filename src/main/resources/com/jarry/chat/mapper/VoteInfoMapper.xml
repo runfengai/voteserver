@@ -9,6 +9,8 @@
         <result column="type" property="type"/>
         <result column="expiry_date" property="expiryDate"/>
         <result column="create_date" property="createDate"/>
+        <result column="sum_user" property="sumUser"/>
+        <result column="sum_vote" property="sumVote"/>
     </resultMap>
     <resultMap id="optionsMap" type="com.jarry.chat.model.response.VoteOptionsInfo">
         <id column="id" property="id"/>
@@ -23,6 +25,18 @@
         <result column="subject_id" property="subjectId"/>
         <result column="option_id" property="optionId"/>
         <result column="create_date" property="createDate"/>
+    </resultMap>
+
+    <resultMap id="userVoteDetail" type="com.jarry.chat.model.response.UserVoteInfo">
+        <id column="user_id" property="userId"/>
+        <result column="subject_id" property="subjectId"/>
+        <result column="option_id" property="optionId"/>
+        <result column="create_date" property="createDate"/>
+
+        <result column="user_name" property="userInfo.userName"/>
+        <result column="school" property="userInfo.school"/>
+        <result column="type" property="userInfo.type"/>
+
     </resultMap>
 
     <select id="getVoteList" resultMap="voteMap" parameterType="java.lang.String">
@@ -43,6 +57,7 @@
             and subject_id=#{subjectId}
         </if>
     </select>
+
     <select id="getUserVoteOptions" resultMap="userVoteMap">
         select *
         from vote_user
@@ -52,7 +67,28 @@
             and subject_id=#{subjectId}
         </if>
 
+        <if test="optionId != null and optionId != 0">
+            and option_id =#{optionId}
+        </if>
     </select>
+
+    <select id="getUserVoteOptionsDetailsByOpt" resultMap="userVoteDetail">
+        select *
+        from vote_user as a
+        left join user as b
+        on ( a.user_id= b.user_id )
+        where
+        1=1
+        <if test="subjectId != null and subjectId != ''">
+            and a.subject_id=#{subjectId}
+        </if>
+
+        <if test="optionId != null and optionId != 0">
+            and a.option_id =#{optionId}
+        </if>
+    </select>
+
+
     <delete id="deleteVote" parameterType="java.lang.String">
         delete from vote
         where
@@ -98,5 +134,14 @@
             #{item}
             and subject_id = #{subjectId}
         </foreach>
+    </update>
+
+    <update id="updateVoteCount">
+        update vote
+        set
+        sum_user = (sum_user+1),
+        sum_vote =(sum_vote+ #{addVoteCount})
+        where
+        subject_id = #{subjectId}
     </update>
 </mapper>

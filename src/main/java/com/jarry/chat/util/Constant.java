@@ -88,6 +88,7 @@ public class Constant {
     public static final String CODE_VOTE_SINGLE_ONLY = "1108";//
     public static final String CODE_VOTE_NOT_SELECT = "1109";//
     public static final String CODE_VOTE_OPT_NOT_EXIT = "1110";//
+    public static final String CODE_VOTE_ALEARDY = "1111";//
     /**
      * ====================投票相关错误码=END=============================
      */

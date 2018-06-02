@@ -1,6 +1,7 @@
 package com.jarry.chat.mapper;
 
 import com.jarry.chat.model.response.UserVote;
+import com.jarry.chat.model.response.UserVoteInfo;
 import com.jarry.chat.model.response.VoteInfo;
 import com.jarry.chat.model.response.VoteOptionsInfo;
 import org.apache.ibatis.annotations.Mapper;
@@ -26,8 +27,11 @@ public interface VoteInfoMapper {
     List<VoteInfo> getVoteDetail(@Param("subjectId") String subjectId);
 
     List<VoteOptionsInfo> getVoteOptionsList(@Param("subjectId") String subjectId);
+    //获取投票
+    List<UserVoteInfo> getUserVoteOptions(@Param("subjectId") String subjectId, @Param("optionId") Long optionId);
 
-    List<UserVote> getUserVoteOptions(@Param("subjectId") String subjectId);
+    //连表查询，详情
+    List<UserVoteInfo> getUserVoteOptionsDetailsByOpt(@Param("subjectId") String subjectId, @Param("optionId") Long optionId);
 
     int deleteVote(@Param("subjectId") String subjectId);
 
@@ -36,6 +40,8 @@ public interface VoteInfoMapper {
     int vote(@Param("userId") String userId, @Param("subjectId") String subjectId, @Param("optionIds") List<Long> optionIds, @Param("createDate") Date createDate);
 
     int updateOptionCountPlus1(@Param("subjectId") String subjectId, @Param("optionId") List<Long> optionId);
+
+    int updateVoteCount(@Param("subjectId") String subjectId, @Param("addVoteCount") int addVoteCount);
 
 //    List<UserInfo> login(@Param("userName") String userName, @Param("password") String password);
 //

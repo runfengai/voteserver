@@ -5,9 +5,7 @@ import com.jarry.chat.mapper.VoteInfoMapper;
 import com.jarry.chat.model.MessageData;
 import com.jarry.chat.model.request.SectionSourceParam;
 import com.jarry.chat.model.request.VoteParam;
-import com.jarry.chat.model.response.UserInfo;
-import com.jarry.chat.model.response.VoteInfo;
-import com.jarry.chat.model.response.VoteOptionsInfo;
+import com.jarry.chat.model.response.*;
 import com.jarry.chat.service.VoteService;
 import com.jarry.chat.util.Constant;
 import com.jarry.chat.util.DateUtils;
@@ -46,8 +44,13 @@ public class VoteServiceImpl implements VoteService {
             map.put("type", item.getType());
             map.put("expiryDate", item.getExpiryDate());
             map.put("createDate", item.getCreateDate());
+            map.put("sumeUser", item.getSumUser());
+            map.put("sumVote", item.getSumVote());
             //查询选项
             List<VoteOptionsInfo> voteOptionsList = voteInfoMapper.getVoteOptionsList(item.getSubjectId());
+            for (VoteOptionsInfo voteOptionsInfo : voteOptionsList) {
+                voteOptionsInfo.setPercent(voteOptionsInfo.getVoteCount() * 100 / item.getSumVote() + "%");
+            }
             map.put("optionList", voteOptionsList);
             resList.add(map);
         }
@@ -74,11 +77,20 @@ public class VoteServiceImpl implements VoteService {
             if (!checkIn(item, voteOptionsList))
                 return new MessageData(ErrorMap.getErrorStr(Constant.CODE_VOTE_OPT_NOT_EXIT), Constant.CODE_VOTE_OPT_NOT_EXIT);
         }
+        //最后还得校验一次用户是否已经投过票
+        List<UserVoteInfo> userVoteOptions = voteInfoMapper.getUserVoteOptions(subjectId, null);
+        if (userVoteOptions != null && userVoteOptions.size() > 0) {
+            return new MessageData(ErrorMap.getErrorStr(Constant.CODE_VOTE_ALEARDY), Constant.CODE_VOTE_ALEARDY);
+        }
+
+
         //开始插入数据
         int res = voteInfoMapper.vote(userId, subjectId, optionIds, new Date());
         if (res > 0) {
-            //插入完成后，手动将对应的数量更新
+            //插入完成后，手动将对应的数量更新/比例
             voteInfoMapper.updateOptionCountPlus1(subjectId, optionIds);
+            //同时更新总数(人数+1，票数+n)
+            voteInfoMapper.updateVoteCount(subjectId, optionIds.size());
             return MessageData.createSuccessMsg("投票成功", null);
         }
         return new MessageData("投票失败", Constant.CODE_ERROR);
@@ -157,11 +169,18 @@ public class VoteServiceImpl implements VoteService {
             map.put("type", voteInfo.getType());
             map.put("expiryDate", voteInfo.getExpiryDate());
             map.put("createDate", voteInfo.getCreateDate());
+            map.put("sumeUser", voteInfo.getSumUser());
+            map.put("sumVote", voteInfo.getSumVote());
             //查询选项
             List<VoteOptionsInfo> voteOptionsList = voteInfoMapper.getVoteOptionsList(voteInfo.getSubjectId());
-//            for (VoteOptionsInfo voteOptionsInfo : voteOptionsList) {
-//
-//            }
+            for (VoteOptionsInfo voteOptionsInfo : voteOptionsList) {
+                voteOptionsInfo.setPercent(voteOptionsInfo.getVoteCount() * 100 / voteInfo.getSumVote() + "%");
+                //======添加投票人信息=================
+                List<UserVoteInfo> userVoteOptions = voteInfoMapper.getUserVoteOptionsDetailsByOpt(subjectId, voteOptionsInfo.getId());
+                voteOptionsInfo.setUserVotes(userVoteOptions);
+                //=====================================
+            }
+
             map.put("optionList", voteOptionsList);
             resList.add(map);
             return new MessageData(Constant.MSG_SUCCESS, Constant.CODE_SUCCESS, map);

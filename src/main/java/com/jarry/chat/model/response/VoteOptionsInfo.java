@@ -2,6 +2,7 @@ package com.jarry.chat.model.response;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Description:
@@ -18,7 +19,17 @@ public class VoteOptionsInfo implements Serializable {
 
     //统计信息
     private int voteCount;
-    private float percent;
+    private String percent;
+
+    private List<UserVoteInfo> userVotes;
+
+    public List<UserVoteInfo> getUserVotes() {
+        return userVotes;
+    }
+
+    public void setUserVotes(List<UserVoteInfo> userVotes) {
+        this.userVotes = userVotes;
+    }
 
     public int getVoteCount() {
         return voteCount;
@@ -28,11 +39,11 @@ public class VoteOptionsInfo implements Serializable {
         this.voteCount = voteCount;
     }
 
-    public float getPercent() {
+    public String getPercent() {
         return percent;
     }
 
-    public void setPercent(float percent) {
+    public void setPercent(String percent) {
         this.percent = percent;
     }
 

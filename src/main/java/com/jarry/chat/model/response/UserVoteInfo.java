@@ -14,6 +14,15 @@ public class UserVoteInfo {
     private String subjectId;
     private Long optionId;
     private Date createDate;
+    private UserInfo userInfo;
+
+    public UserInfo getUserInfo() {
+        return userInfo;
+    }
+
+    public void setUserInfo(UserInfo userInfo) {
+        this.userInfo = userInfo;
+    }
 
     public Long getOptionId() {
         return optionId;
