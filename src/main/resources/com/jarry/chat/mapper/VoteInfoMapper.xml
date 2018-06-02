@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.jarry.chat.mapper.VoteInfoMapper">
+
+    <resultMap id="voteMap" type="com.jarry.chat.model.response.VoteInfo">
+        <result column="subject" property="subject"/>
+        <result column="subject_id" property="subjectId"/>
+        <result column="type" property="type"/>
+        <result column="expiry_date" property="expiryDate"/>
+        <result column="create_date" property="createDate"/>
+    </resultMap>
+    <resultMap id="optionsMap" type="com.jarry.chat.model.response.VoteOptionsInfo">
+        <id column="id" property="id"/>
+        <result column="subject_id" property="subjectId"/>
+        <result column="option_str" property="optionStr"/>
+        <result column="option_index" property="optionIndex"/>
+        <result column="create_date" property="createDate"/>
+        <result column="count" property="voteCount"/>
+    </resultMap>
+    <resultMap id="userVoteMap" type="com.jarry.chat.model.response.UserVoteInfo">
+        <id column="user_id" property="userId"/>
+        <result column="subject_id" property="subjectId"/>
+        <result column="option_id" property="optionId"/>
+        <result column="create_date" property="createDate"/>
+    </resultMap>
+
+    <select id="getVoteList" resultMap="voteMap" parameterType="java.lang.String">
+        SELECT *
+        FROM vote
+        WHERE
+        1=1
+        <if test="subjectId != null and subjectId != ''">
+            and subject_id=#{subjectId}
+        </if>
+    </select>
+    <select id="getVoteOptionsList" resultMap="optionsMap" parameterType="java.lang.String">
+        SELECT *
+        FROM vote_options
+        WHERE
+        1=1
+        <if test="subjectId != null and subjectId != ''">
+            and subject_id=#{subjectId}
+        </if>
+    </select>
+    <select id="getUserVoteOptions" resultMap="userVoteMap">
+        select *
+        from vote_user
+        where
+        1=1
+        <if test="subjectId != null and subjectId != ''">
+            and subject_id=#{subjectId}
+        </if>
+
+    </select>
+    <delete id="deleteVote" parameterType="java.lang.String">
+        delete from vote
+        where
+        subject_id =#{subjectId}
+    </delete>
+    <delete id="deleteOptions" parameterType="java.lang.String">
+        delete from vote_options
+        where
+        subject_id =#{subjectId}
+    </delete>
+
+    <insert id="createSub" parameterType="com.jarry.chat.model.response.VoteInfo">
+        insert into vote
+        (subject,type,subject_id,create_date,expiry_date)
+        values
+        (#{voteInfo.subject},#{voteInfo.type},#{voteInfo.subjectId},#{voteInfo.createDate},
+        #{voteInfo.expiryDate,jdbcType=DATE})
+    </insert>
+    <insert id="createOptions" parameterType="java.util.List">
+        insert into vote_options
+        (option_str,subject_id,option_index,create_date)
+        values
+        <foreach collection="voteInfo" item="item" index="index" separator=",">
+            (#{item.optionStr},#{item.subjectId},#{item.optionIndex},#{item.createDate})
+        </foreach>
+    </insert>
+
+    <insert id="vote">
+        insert into vote_user
+        (user_id,subject_id,option_id,create_date)
+        values
+        <foreach collection="optionIds" item="item" index="index" separator=",">
+            (#{userId},#{subjectId},#{item},#{createDate})
+        </foreach>
+    </insert>
+
+    <update id="updateOptionCountPlus1">
+        <foreach collection="optionId" item="item" separator=";">
+            update vote_options
+            set
+            count = (count+1)
+            where id =
+            #{item}
+            and subject_id = #{subjectId}
+        </foreach>
+    </update>
+</mapper>
