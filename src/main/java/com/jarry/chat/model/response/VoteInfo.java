@@ -21,6 +21,16 @@ public class VoteInfo implements Serializable {
     private int sumUser;
     private int sumVote;
 
+    private Boolean hasVoted = false;
+
+    public Boolean getHasVoted() {
+        return hasVoted;
+    }
+
+    public void setHasVoted(Boolean hasVoted) {
+        this.hasVoted = hasVoted;
+    }
+
     public int getSumUser() {
         return sumUser;
     }

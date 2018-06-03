@@ -45,8 +45,8 @@ public class VoteController {
     }
 
     @RequestMapping(value = "/list")
-    MessageData getList() {
-        return voteService.voteList();
+    MessageData getList(String userId) {
+        return voteService.voteList(userId);
     }
 
     @RequestMapping(value = "/delete")

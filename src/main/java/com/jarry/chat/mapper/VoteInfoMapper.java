@@ -24,11 +24,16 @@ public interface VoteInfoMapper {
 
     List<VoteInfo> getVoteList(@Param("subjectId") String subjectId);
 
+    List<VoteInfo> getVoteListByUserId(@Param("userId") String userId);
+
     List<VoteInfo> getVoteDetail(@Param("subjectId") String subjectId);
 
     List<VoteOptionsInfo> getVoteOptionsList(@Param("subjectId") String subjectId);
+
     //获取投票
     List<UserVoteInfo> getUserVoteOptions(@Param("subjectId") String subjectId, @Param("optionId") Long optionId);
+
+    List<UserVoteInfo> isUserVote(@Param("subjectId") String subjectId, @Param("userId") String userId);
 
     //连表查询，详情
     List<UserVoteInfo> getUserVoteOptionsDetailsByOpt(@Param("subjectId") String subjectId, @Param("optionId") Long optionId);

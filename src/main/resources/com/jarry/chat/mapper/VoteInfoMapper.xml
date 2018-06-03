@@ -11,6 +11,7 @@
         <result column="create_date" property="createDate"/>
         <result column="sum_user" property="sumUser"/>
         <result column="sum_vote" property="sumVote"/>
+        <result column="has_vote" property="hasVoted"/>
     </resultMap>
     <resultMap id="optionsMap" type="com.jarry.chat.model.response.VoteOptionsInfo">
         <id column="id" property="id"/>
@@ -48,6 +49,22 @@
             and subject_id=#{subjectId}
         </if>
     </select>
+
+    <select id="getVoteListByUserId" resultMap="voteMap" parameterType="java.lang.String">
+        SELECT distinct(a.*),b.userId
+        FROM vote as a
+        left join vote_user as b
+        on (a.subject_id = b.subject_id)
+        WHERE
+        1=1
+        <if test="subjectId != null and subjectId != ''">
+            and a.subject_id=#{subjectId}
+        </if>
+        <if test="userId != null and userId != ''">
+            and b.userId=#{userId}
+        </if>
+    </select>
+
     <select id="getVoteOptionsList" resultMap="optionsMap" parameterType="java.lang.String">
         SELECT *
         FROM vote_options
@@ -69,6 +86,20 @@
 
         <if test="optionId != null and optionId != 0">
             and option_id =#{optionId}
+        </if>
+    </select>
+
+    <select id="isUserVote" resultMap="userVoteMap">
+        select *
+        from vote_user
+        where
+        1=1
+        <if test="subjectId != null and subjectId != ''">
+            and subject_id=#{subjectId}
+        </if>
+
+        <if test="userId != null and userId != 0">
+            and user_id =#{userId}
         </if>
     </select>
 

@@ -15,7 +15,7 @@ import java.util.List;
 public interface VoteService {
 
     //列表
-    MessageData voteList();
+    MessageData voteList(String userId);
 
     //投票
     MessageData vote(String userId, String subjectId, List<Long> optionIndexs);

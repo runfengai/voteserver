@@ -32,12 +32,14 @@ public class VoteServiceImpl implements VoteService {
     UserInfoMapper userInfoMapper;
 
     @Override
-    public MessageData voteList() {
+    public MessageData voteList(String userId) {
         List<VoteInfo> list = voteInfoMapper.getVoteList(null);
 //        map.put("list", list);
         List<Map<String, Object>> resList = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {
             VoteInfo item = list.get(i);
+            //查询下是否投过票，待优化
+            List<UserVoteInfo> userVote = voteInfoMapper.isUserVote(item.getSubjectId(), userId);
             Map<String, Object> map = new HashMap<>();
             map.put("subject", item.getSubject());
             map.put("subjectId", item.getSubjectId());
@@ -46,10 +48,11 @@ public class VoteServiceImpl implements VoteService {
             map.put("createDate", item.getCreateDate());
             map.put("sumeUser", item.getSumUser());
             map.put("sumVote", item.getSumVote());
+            map.put("hasVoted", (userVote != null && userVote.size() > 0) ? true : false);
             //查询选项
             List<VoteOptionsInfo> voteOptionsList = voteInfoMapper.getVoteOptionsList(item.getSubjectId());
             for (VoteOptionsInfo voteOptionsInfo : voteOptionsList) {
-                voteOptionsInfo.setPercent(voteOptionsInfo.getVoteCount() * 100 / item.getSumVote() + "%");
+                voteOptionsInfo.setPercent(item.getSumVote() == 0 ? "0%" : voteOptionsInfo.getVoteCount() * 100 / item.getSumVote() + "%");
             }
             map.put("optionList", voteOptionsList);
             resList.add(map);
@@ -116,6 +119,8 @@ public class VoteServiceImpl implements VoteService {
         voteInfo.setSubjectId(subjectId);
         voteInfo.setCreateDate(new Date());
         voteInfo.setType(voteParam.getType());
+        voteInfo.setSumUser(0);
+        voteInfo.setSumVote(0);
         int createSubRe = voteInfoMapper.createSub(voteInfo);
         if (createSubRe > 0) {
             //继续创建选项
@@ -128,6 +133,7 @@ public class VoteServiceImpl implements VoteService {
                 voteOptionsInfo.setOptionStr(voteParam.getOption().get(i));
                 voteOptionsInfo.setOptionIndex(i);
                 voteOptionsInfo.setSubjectId(subjectId);
+                voteOptionsInfo.setVoteCount(0);
                 voteInfos.add(voteOptionsInfo);
             }
             int res = voteInfoMapper.createOptions(voteInfos);
@@ -174,7 +180,8 @@ public class VoteServiceImpl implements VoteService {
             //查询选项
             List<VoteOptionsInfo> voteOptionsList = voteInfoMapper.getVoteOptionsList(voteInfo.getSubjectId());
             for (VoteOptionsInfo voteOptionsInfo : voteOptionsList) {
-                voteOptionsInfo.setPercent(voteOptionsInfo.getVoteCount() * 100 / voteInfo.getSumVote() + "%");
+                //防止有0的情况
+                voteOptionsInfo.setPercent(voteInfo.getSumVote() == 0 ? "0%" : voteOptionsInfo.getVoteCount() * 100 / voteInfo.getSumVote() + "%");
                 //======添加投票人信息=================
                 List<UserVoteInfo> userVoteOptions = voteInfoMapper.getUserVoteOptionsDetailsByOpt(subjectId, voteOptionsInfo.getId());
                 voteOptionsInfo.setUserVotes(userVoteOptions);
