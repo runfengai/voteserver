@@ -97,8 +97,7 @@
         <if test="subjectId != null and subjectId != ''">
             and subject_id=#{subjectId}
         </if>
-
-        <if test="userId != null and userId != 0">
+        <if test="userId != null and userId != ''">
             and user_id =#{userId}
         </if>
     </select>
