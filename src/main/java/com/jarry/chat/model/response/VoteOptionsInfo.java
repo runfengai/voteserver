@@ -20,6 +20,15 @@ public class VoteOptionsInfo implements Serializable {
     //统计信息
     private int voteCount;
     private String percent;
+    private boolean hasVoted;
+
+    public boolean isHasVoted() {
+        return hasVoted;
+    }
+
+    public void setHasVoted(boolean hasVoted) {
+        this.hasVoted = hasVoted;
+    }
 
     private List<UserVoteInfo> userVotes;
 

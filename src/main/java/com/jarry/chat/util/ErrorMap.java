@@ -31,6 +31,7 @@ public class ErrorMap {
         errorMap.put(Constant.CODE_VOTE_NOT_SELECT, "请先选择选项");
         errorMap.put(Constant.CODE_VOTE_OPT_NOT_EXIT, "没有指定选项");
         errorMap.put(Constant.CODE_VOTE_ALEARDY, "该用户已投过票");
+        errorMap.put(Constant.CODE_VOTE_ABORT, "已超过投票期限");
     }
 
     public static String getErrorStr(String code) {

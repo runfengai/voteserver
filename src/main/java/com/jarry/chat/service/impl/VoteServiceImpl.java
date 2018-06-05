@@ -48,16 +48,30 @@ public class VoteServiceImpl implements VoteService {
             map.put("createDate", item.getCreateDate());
             map.put("sumeUser", item.getSumUser());
             map.put("sumVote", item.getSumVote());
+            logger.info("userVote----->" + userVote);
             map.put("hasVoted", (userVote != null && userVote.size() > 0) ? true : false);
-            //查询选项
+//            map.put("voteId", (userVote != null && userVote.size() > 0) ?  userVote.get(0).getOptionId() : -1);
             List<VoteOptionsInfo> voteOptionsList = voteInfoMapper.getVoteOptionsList(item.getSubjectId());
             for (VoteOptionsInfo voteOptionsInfo : voteOptionsList) {
                 voteOptionsInfo.setPercent(item.getSumVote() == 0 ? "0%" : voteOptionsInfo.getVoteCount() * 100 / item.getSumVote() + "%");
+                //判断用户是否已经选择
+                voteOptionsInfo.setHasVoted(hasVoted(voteOptionsInfo.getId(), userVote));
             }
             map.put("optionList", voteOptionsList);
             resList.add(map);
         }
         return MessageData.createSuccessMsg("查询成功", resList);
+    }
+
+    //是否已投票
+    private boolean hasVoted(Long voteId, List<UserVoteInfo> userVote) {
+        if (userVote != null && userVote.size() > 0) {
+            for (UserVoteInfo userVoteInfo : userVote) {
+                if (userVoteInfo.getOptionId() == voteId)
+                    return true;
+            }
+            return false;
+        } else return false;
     }
 
     //投票
@@ -70,6 +84,11 @@ public class VoteServiceImpl implements VoteService {
         if (voteList == null || voteList.size() == 0)
             return new MessageData(ErrorMap.getErrorStr(Constant.CODE_VOTE_INFO_NULL), Constant.CODE_VOTE_INFO_NULL);
         VoteInfo voteInfo = voteList.get(0);
+        //判断
+        Date expiryDate = voteInfo.getExpiryDate();
+        if (expiryDate.before(new Date()))
+            return new MessageData(ErrorMap.getErrorStr(Constant.CODE_VOTE_ABORT), Constant.CODE_VOTE_ABORT);
+
         int type = voteInfo.getType();
         if (type == VoteInfo.TYPE_SINGLE && optionIds.size() > 1) {//单选校验
             return new MessageData(ErrorMap.getErrorStr(Constant.CODE_VOTE_SINGLE_ONLY), Constant.CODE_VOTE_SINGLE_ONLY);
@@ -85,6 +104,7 @@ public class VoteServiceImpl implements VoteService {
         if (userVoteOptions != null && userVoteOptions.size() > 0) {
             return new MessageData(ErrorMap.getErrorStr(Constant.CODE_VOTE_ALEARDY), Constant.CODE_VOTE_ALEARDY);
         }
+        //校验投票时间
 
 
         //开始插入数据

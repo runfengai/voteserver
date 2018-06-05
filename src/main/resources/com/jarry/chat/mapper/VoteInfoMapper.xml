@@ -34,9 +34,9 @@
         <result column="option_id" property="optionId"/>
         <result column="create_date" property="createDate"/>
 
-        <result column="user_name" property="userInfo.userName"/>
-        <result column="school" property="userInfo.school"/>
-        <result column="type" property="userInfo.type"/>
+        <result column="user_name" property="userName"/>
+        <result column="school" property="school"/>
+        <result column="type" property="type"/>
 
     </resultMap>
 
@@ -132,17 +132,17 @@
 
     <insert id="createSub" parameterType="com.jarry.chat.model.response.VoteInfo">
         insert into vote
-        (subject,type,subject_id,create_date,expiry_date)
+        (subject,type,subject_id,create_date,expiry_date,sum_user,sum_vote)
         values
         (#{voteInfo.subject},#{voteInfo.type},#{voteInfo.subjectId},#{voteInfo.createDate},
-        #{voteInfo.expiryDate,jdbcType=DATE})
+        #{voteInfo.expiryDate,jdbcType=DATE},#{voteInfo.sumUser},#{voteInfo.sumVote})
     </insert>
     <insert id="createOptions" parameterType="java.util.List">
         insert into vote_options
-        (option_str,subject_id,option_index,create_date)
+        (option_str,subject_id,option_index,create_date,count)
         values
         <foreach collection="voteInfo" item="item" index="index" separator=",">
-            (#{item.optionStr},#{item.subjectId},#{item.optionIndex},#{item.createDate})
+            (#{item.optionStr},#{item.subjectId},#{item.optionIndex},#{item.createDate},#{item.voteCount})
         </foreach>
     </insert>
 

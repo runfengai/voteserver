@@ -14,14 +14,35 @@ public class UserVoteInfo {
     private String subjectId;
     private Long optionId;
     private Date createDate;
-    private UserInfo userInfo;
+//    private UserInfo userInfo;
 
-    public UserInfo getUserInfo() {
-        return userInfo;
+    private String userName;
+    private String school;//学校
+    private int type;//0普通用户
+
+
+    public String getUserName() {
+        return userName;
     }
 
-    public void setUserInfo(UserInfo userInfo) {
-        this.userInfo = userInfo;
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getSchool() {
+        return school;
+    }
+
+    public void setSchool(String school) {
+        this.school = school;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
     }
 
     public Long getOptionId() {
