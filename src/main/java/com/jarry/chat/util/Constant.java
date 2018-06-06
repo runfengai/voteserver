@@ -90,6 +90,7 @@ public class Constant {
     public static final String CODE_VOTE_OPT_NOT_EXIT = "1110";//
     public static final String CODE_VOTE_ALEARDY = "1111";//
     public static final String CODE_VOTE_ABORT = "1112";//
+    public static final String CODE_VOTE_EXPRIORY_ERR = "1113";//
     /**
      * ====================投票相关错误码=END=============================
      */

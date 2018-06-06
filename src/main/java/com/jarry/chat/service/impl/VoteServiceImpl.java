@@ -86,6 +86,9 @@ public class VoteServiceImpl implements VoteService {
         VoteInfo voteInfo = voteList.get(0);
         //判断
         Date expiryDate = voteInfo.getExpiryDate();
+        if (expiryDate == null)
+            return new MessageData(ErrorMap.getErrorStr(Constant.CODE_VOTE_EXPRIORY_ERR), Constant.CODE_VOTE_ABORT);
+
         if (expiryDate.before(new Date()))
             return new MessageData(ErrorMap.getErrorStr(Constant.CODE_VOTE_ABORT), Constant.CODE_VOTE_ABORT);
 
@@ -100,7 +103,7 @@ public class VoteServiceImpl implements VoteService {
                 return new MessageData(ErrorMap.getErrorStr(Constant.CODE_VOTE_OPT_NOT_EXIT), Constant.CODE_VOTE_OPT_NOT_EXIT);
         }
         //最后还得校验一次用户是否已经投过票
-        List<UserVoteInfo> userVoteOptions = voteInfoMapper.getUserVoteOptions(subjectId, null);
+        List<UserVoteInfo> userVoteOptions = voteInfoMapper.isUserVote(subjectId, userId);
         if (userVoteOptions != null && userVoteOptions.size() > 0) {
             return new MessageData(ErrorMap.getErrorStr(Constant.CODE_VOTE_ALEARDY), Constant.CODE_VOTE_ALEARDY);
         }
@@ -175,6 +178,7 @@ public class VoteServiceImpl implements VoteService {
             int voteDelRes = voteInfoMapper.deleteVote(subjectId);
             logger.info("vote del---->voteDelRes=" + voteDelRes);
             voteInfoMapper.deleteOptions(subjectId);
+            voteInfoMapper.deleteVoteUser(subjectId);
             return new MessageData("删除成功", Constant.CODE_SUCCESS);
         } else
             return new MessageData(ErrorMap.getErrorStr(Constant.CODE_VOTE_DELETE_NULL), Constant.CODE_VOTE_DELETE_NULL);
@@ -182,7 +186,7 @@ public class VoteServiceImpl implements VoteService {
 
     //直接查询每个选项有多人选
     @Override
-    public MessageData detail(String subjectId) {
+    public MessageData detail(String subjectId, String userId) {
         //先查，查完再删
         List<VoteInfo> list = voteInfoMapper.getVoteList(subjectId);
         if (list != null && list.size() > 0) {//有数据
@@ -197,6 +201,9 @@ public class VoteServiceImpl implements VoteService {
             map.put("createDate", voteInfo.getCreateDate());
             map.put("sumeUser", voteInfo.getSumUser());
             map.put("sumVote", voteInfo.getSumVote());
+            //查询下是否投过票，待优化
+            List<UserVoteInfo> userVote = voteInfoMapper.isUserVote(subjectId, userId);
+            map.put("hasVoted", (userVote != null && userVote.size() > 0) ? true : false);
             //查询选项
             List<VoteOptionsInfo> voteOptionsList = voteInfoMapper.getVoteOptionsList(voteInfo.getSubjectId());
             for (VoteOptionsInfo voteOptionsInfo : voteOptionsList) {
@@ -205,6 +212,8 @@ public class VoteServiceImpl implements VoteService {
                 //======添加投票人信息=================
                 List<UserVoteInfo> userVoteOptions = voteInfoMapper.getUserVoteOptionsDetailsByOpt(subjectId, voteOptionsInfo.getId());
                 voteOptionsInfo.setUserVotes(userVoteOptions);
+                //判断用户是否已经选择
+                voteOptionsInfo.setHasVoted(hasVoted(voteOptionsInfo.getId(), userVote));
                 //=====================================
             }
 

@@ -25,7 +25,7 @@ public interface VoteService {
 
     MessageData delete(String subjectId);
 
-    MessageData detail(String subjectId);
+    MessageData detail(String subjectId,String userId);
 
     //修改
     MessageData update(VoteParam voteParam);

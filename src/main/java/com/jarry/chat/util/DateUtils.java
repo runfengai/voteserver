@@ -22,4 +22,11 @@ public class DateUtils {
         }
         return null;
     }
+
+    public static void main(String[] args) {
+        String dateStr="2018-06-23 18:56:21";
+        Date date = parse(dateStr);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        System.out.print(sdf.format(date));
+    }
 }

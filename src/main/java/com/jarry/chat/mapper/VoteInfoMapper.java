@@ -42,6 +42,8 @@ public interface VoteInfoMapper {
 
     int deleteOptions(@Param("subjectId") String subjectId);
 
+    int deleteVoteUser(@Param("subjectId") String subjectId);
+
     int vote(@Param("userId") String userId, @Param("subjectId") String subjectId, @Param("optionIds") List<Long> optionIds, @Param("createDate") Date createDate);
 
     int updateOptionCountPlus1(@Param("subjectId") String subjectId, @Param("optionId") List<Long> optionId);

@@ -129,6 +129,11 @@
         where
         subject_id =#{subjectId}
     </delete>
+    <delete id="deleteVoteUser" parameterType="java.lang.String">
+        delete from vote_user
+        where
+        subject_id =#{subjectId}
+    </delete>
 
     <insert id="createSub" parameterType="com.jarry.chat.model.response.VoteInfo">
         insert into vote
@@ -170,7 +175,8 @@
         update vote
         set
         sum_user = (sum_user+1),
-        sum_vote =(sum_vote+ #{addVoteCount})
+        sum_vote =(sum_vote+ #{addVoteCount}),
+        expiry_date = expiry_date
         where
         subject_id = #{subjectId}
     </update>

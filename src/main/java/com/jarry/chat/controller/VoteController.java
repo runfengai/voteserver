@@ -5,6 +5,7 @@ import com.jarry.chat.model.request.VoteParam;
 import com.jarry.chat.model.response.UserVote;
 import com.jarry.chat.service.VoteService;
 import com.jarry.chat.util.Constant;
+import com.jarry.chat.util.DateUtils;
 import com.jarry.chat.util.ErrorMap;
 import com.mysql.jdbc.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,7 @@ public class VoteController {
             return new MessageData(ErrorMap.getErrorStr(Constant.CODE_VOTE_SUBJECT_NULL), Constant.CODE_VOTE_SUBJECT_NULL);
         } else if (voteParam.getOption() == null || voteParam.getOption().size() == 0) {
             return new MessageData(ErrorMap.getErrorStr(Constant.CODE_VOTE_OPTION_NULL), Constant.CODE_VOTE_OPTION_NULL);
-        } else if (voteParam.getExpiryDate() == null) {
+        } else if (org.springframework.util.StringUtils.isEmpty(voteParam.getExpiryDate()) || DateUtils.parse(voteParam.getExpiryDate()) == null) {
             return new MessageData(ErrorMap.getErrorStr(Constant.CODE_VOTE_EXPIRY_DATE_NULL), Constant.CODE_VOTE_EXPIRY_DATE_NULL);
         }
         for (String opt : voteParam.getOption()) {
@@ -74,10 +75,12 @@ public class VoteController {
     }
 
     @RequestMapping(value = "/detail")
-    MessageData detail(String subjectId) {
+    MessageData detail(String subjectId, String userId) {
         if (StringUtils.isNullOrEmpty(subjectId))
             return new MessageData(ErrorMap.getErrorStr(Constant.CODE_VOTE_INFO_NULL), Constant.CODE_VOTE_INFO_NULL);
+        if (StringUtils.isNullOrEmpty(userId))
+            return new MessageData(ErrorMap.getErrorStr(Constant.CODE_USER_NOT_EXIST), Constant.CODE_USER_NOT_EXIST);
 
-        return voteService.detail(subjectId);
+        return voteService.detail(subjectId, userId);
     }
 }
