@@ -7,7 +7,7 @@
         <setting name="mapUnderscoreToCamelCase" value="true"/>
     </settings>
     <typeAliases>
-        <package name="com.jarry.chat.model"/>
+        <package name="com.jarry.vote.model"/>
     </typeAliases>
     <environments default="development">
         <environment id="development">
