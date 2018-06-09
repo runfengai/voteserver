@@ -7,6 +7,8 @@ import com.jarry.chat.service.UserService;
 import com.jarry.chat.util.Constant;
 import com.jarry.chat.util.ErrorMap;
 import com.mysql.jdbc.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,23 +21,25 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/user")
 public class UserController {
-
+    private static Logger logger = LoggerFactory.getLogger(UserController.class);
     @Autowired
     UserService userInfoService;
 
     @RequestMapping(value = "/login")
     MessageData login(LoginParam param) {
+        logger.info("login----->", param);
         if (param == null) return new MessageData(Constant.MSG_PARAM_NULL, Constant.CODE_PARAM_NULL);
         else if (StringUtils.isNullOrEmpty(param.getUserName())) {
-            return new MessageData(ErrorMap.getErrorStr(Constant.CODE_REGISTER_USER_NAME_NULL),Constant.CODE_REGISTER_USER_NAME_NULL);
+            return new MessageData(ErrorMap.getErrorStr(Constant.CODE_REGISTER_USER_NAME_NULL), Constant.CODE_REGISTER_USER_NAME_NULL);
         } else if (StringUtils.isNullOrEmpty(param.getPassword())) {
-            return new MessageData( ErrorMap.getErrorStr(Constant.CODE_LOGIN_ERROR_PWD_NULL),Constant.CODE_LOGIN_ERROR_PWD_NULL);
+            return new MessageData(ErrorMap.getErrorStr(Constant.CODE_LOGIN_ERROR_PWD_NULL), Constant.CODE_LOGIN_ERROR_PWD_NULL);
         }
         return userInfoService.login(param.getUserName(), param.getPassword());
     }
 
     @RequestMapping(value = "/register")
     MessageData register(UserInfo userInfo) {
+        logger.info("register----->", userInfo);
         //数据校验
         if (userInfo == null) return new MessageData(Constant.MSG_PARAM_NULL, Constant.CODE_PARAM_NULL);
         else if (StringUtils.isNullOrEmpty(userInfo.getUserName())) {
@@ -57,6 +61,7 @@ public class UserController {
 
     @RequestMapping(value = "/info")
     MessageData userInfo(UserInfo param) {
+        logger.info("userInfo----->", param);
         if (param == null) return new MessageData(Constant.MSG_PARAM_NULL, Constant.CODE_PARAM_NULL);
         String userId = param.getUserId();
         String phone = param.getPhone();
@@ -67,6 +72,6 @@ public class UserController {
         if (!StringUtils.isNullOrEmpty(phone)) {//根据手机号查询用户
             return userInfoService.userInfoByPhone(phone);
         }
-        return new MessageData( ErrorMap.getErrorStr(Constant.CODE_USER_INFO_NULL),Constant.CODE_USER_INFO_NULL);
+        return new MessageData(ErrorMap.getErrorStr(Constant.CODE_USER_INFO_NULL), Constant.CODE_USER_INFO_NULL);
     }
 }

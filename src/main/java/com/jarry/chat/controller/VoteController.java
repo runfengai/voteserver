@@ -8,6 +8,8 @@ import com.jarry.chat.util.Constant;
 import com.jarry.chat.util.DateUtils;
 import com.jarry.chat.util.ErrorMap;
 import com.mysql.jdbc.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,12 +26,14 @@ import java.util.List;
 @RestController
 @RequestMapping("/vote")
 public class VoteController {
+    private static final Logger logger = LoggerFactory.getLogger(VoteController.class);
     @Autowired
     VoteService voteService;
 
 
     @RequestMapping(value = "/create", produces = "application/json;charset=utf-8")
     MessageData create(@RequestBody VoteParam voteParam) {
+        logger.info("create------->", voteParam);
         if (voteParam == null) return new MessageData(Constant.MSG_PARAM_NULL, Constant.CODE_PARAM_NULL);
         else if (StringUtils.isNullOrEmpty(voteParam.getSubject())) {
             return new MessageData(ErrorMap.getErrorStr(Constant.CODE_VOTE_SUBJECT_NULL), Constant.CODE_VOTE_SUBJECT_NULL);
@@ -47,11 +51,13 @@ public class VoteController {
 
     @RequestMapping(value = "/list")
     MessageData getList(String userId) {
+        logger.info("getList------->", userId);
         return voteService.voteList(userId);
     }
 
     @RequestMapping(value = "/delete")
     MessageData delete(String subjectId) {
+        logger.info("delete------->", subjectId);
         if (StringUtils.isNullOrEmpty(subjectId))
             return new MessageData(Constant.MSG_PARAM_NULL, Constant.CODE_PARAM_NULL);
         return voteService.delete(subjectId);
@@ -59,6 +65,7 @@ public class VoteController {
 
     @RequestMapping(value = "/vote", produces = "application/json;charset=utf-8")
     MessageData vote(@RequestBody UserVote userVote) {
+        logger.info("vote------->", userVote);
         if (userVote == null)
             return new MessageData(Constant.MSG_PARAM_NULL, Constant.CODE_PARAM_NULL);
         String userId = userVote.getUserId();
@@ -76,6 +83,7 @@ public class VoteController {
 
     @RequestMapping(value = "/detail")
     MessageData detail(String subjectId, String userId) {
+        logger.info("detail------->", "subjectId=" + subjectId + "  userId=" + userId);
         if (StringUtils.isNullOrEmpty(subjectId))
             return new MessageData(ErrorMap.getErrorStr(Constant.CODE_VOTE_INFO_NULL), Constant.CODE_VOTE_INFO_NULL);
         if (StringUtils.isNullOrEmpty(userId))
