@@ -1,16 +1,11 @@
 package com.jarry.chat;
 
 import com.jarry.chat.mapper.UserInfoMapper;
-import com.jarry.chat.model.response.UserInfo;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import sun.rmi.runtime.Log;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Description:程序入口
@@ -21,12 +16,12 @@ import java.util.logging.Logger;
 //@EnableAutoConfiguration
 @SpringBootApplication
 @MapperScan({"com.jarry.chat.mapper"})
-public class ChatApplication implements CommandLineRunner {
+public class VoteApplication implements CommandLineRunner {
     @Autowired
     private UserInfoMapper userInfoMapper;
 
     public static void main(String[] args) {
-        SpringApplication.run(ChatApplication.class, args);
+        SpringApplication.run(VoteApplication.class, args);
     }
 
     @Override
